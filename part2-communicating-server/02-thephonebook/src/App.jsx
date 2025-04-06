@@ -4,14 +4,25 @@ const App = () => {
   const [persons, setPersons] = useState([
     { name: "Arto Hellas", number: "040-123456", id: 1 },
   ]);
+  const [filteredPersons, setFilteredPersons] = useState(persons);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [searchValue, setSearchValue] = useState("");
 
   const handleNameChange = (event) => {
     setNewName(event.target.value);
   };
   const handleNumberChange = (event) => {
     setNewNumber(event.target.value);
+  };
+
+  const handleSearchValueChange = (event) => {
+    const newSearchValue = event.target.value;
+    setSearchValue(newSearchValue);
+    const newFilteredPersons = persons.filter((person) =>
+      person.name.toLowerCase().includes(newSearchValue.toLowerCase())
+    );
+    setFilteredPersons(newFilteredPersons);
   };
 
   const addName = (event) => {
@@ -32,6 +43,13 @@ const App = () => {
     };
 
     setPersons(persons.concat(newPerson));
+    setFilteredPersons(
+      persons
+        .concat(newPerson)
+        .filter((person) =>
+          person.name.toLowerCase().includes(searchValue.toLowerCase())
+        )
+    );
     setNewName("");
     setNewNumber("");
   };
@@ -39,6 +57,15 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        filter shown with{" "}
+        <input
+          type="text"
+          value={searchValue}
+          onChange={handleSearchValueChange}
+        />
+      </div>
+      <h2>Add a new</h2>
       <form onSubmit={addName}>
         <div>
           name: <input value={newName} onChange={handleNameChange} />
@@ -52,7 +79,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <div>
-        {persons.map((person, index) => (
+        {filteredPersons.map((person, index) => (
           <div key={index}>
             <p>
               {person.name} {person.number}
