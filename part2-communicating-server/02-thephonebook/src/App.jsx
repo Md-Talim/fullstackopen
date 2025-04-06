@@ -1,4 +1,5 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const Filter = ({ searchValue, onChange }) => (
   <div>
@@ -43,9 +44,7 @@ const Persons = ({ persons }) => (
 );
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [filteredPersons, setFilteredPersons] = useState(persons);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
@@ -59,6 +58,22 @@ const App = () => {
     );
     setFilteredPersons(newFilteredPersons);
   };
+
+  const loadPersons = () => {
+    axios
+      .get("http://localhost:3001/persons")
+      .then((response) => {
+        console.log(response.data);
+        setPersons(response.data);
+        setFilteredPersons(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching persons:", error);
+        alert("Failed to load persons. Please try again later.");
+      });
+  };
+
+  useEffect(loadPersons, []);
 
   const addName = (event) => {
     event.preventDefault();
